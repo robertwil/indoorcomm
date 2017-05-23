@@ -26,8 +26,9 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
 		     int		has_range,
 			 scanData_t *retScanData)
 {
-  char		buffer[128];	/* Temporary buffer */
+  char		buffer[128] = { '\0' };	/* Temporary buffer */
   int RSSIbuf=0;
+  retScanData[state->ap_num -1].validScan = 0;
   /* Now, let's decode the event */
   switch(event->cmd)
     {
@@ -43,7 +44,8 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
       //printf("\nTestprint:%d: %s\n",state->ap_num,retScanData[state->ap_num].mac);
       //retScanData++;
       state->ap_num++;
-      sprintf(retScanData[state->ap_num].mac,"%s",buffer);
+      sprintf(retScanData[state->ap_num -2 ].mac,"%s",buffer);
+      retScanData[state->ap_num -2].validScan = 1;
       break;
     case SIOCGIWNWID:
       if(event->u.nwid.disabled)
@@ -92,7 +94,7 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
 	else
 	  printf("                    ESSID:off/any/hidden\n");
       }
-      memcpy(retScanData[state->ap_num].essid, event->u.essid.pointer, event->u.essid.length);
+      memcpy(retScanData[state->ap_num -2 ].essid, event->u.essid.pointer, event->u.essid.length);
       //TODO: above
       break;
 
@@ -168,7 +170,7 @@ print_scanning_token(struct stream_descr *	stream,	/* Stream of events */
       iw_print_stats(buffer, sizeof(buffer),
 		     &event->u.qual, iw_range, has_range,&RSSIbuf);
       printf("                    %s\n", buffer);
-      retScanData[state->ap_num].SSID = RSSIbuf;
+      retScanData[state->ap_num -2].SSID = RSSIbuf;
       break;
 #ifndef WE_ESSENTIAL
     case IWEVGENIE:

@@ -50,27 +50,20 @@ typedef struct _bus_handler
 /********************* Class interface / public methods ******************/
 /*************************************************************************/
 /*---------------------------------------------------------------------------*/
-/*! \brief      Initialize the bus_handler_t object.
+/*! \brief
  *
- *                 The bus_handler_t object is a singleton and is stored in the class.
- *                 Therefore we can call all other public methods without the object.
- *
- *     \param object
- *                 The object to initialize
  */
 bool bus_init(bus_handler_t *object);
 
 /*---------------------------------------------------------------------------*/
-/*! \brief      Stuff to be done to the singleton before the system shuts down.
+/*! \brief
  *
  */
 bool bus_shutdown ();
 
 /*---------------------------------------------------------------------------*/
-/*! \brief      Sends values to the DAC
+/*! \brief
  *
- *              tx0 : changes setting of DAC
- *              data : 12 bit data for DAC ( 0-> 0V ; 4095->2.5V V_DAC )
  *
  *
  */

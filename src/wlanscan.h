@@ -17,6 +17,7 @@ typedef struct iwscan_state
 
 typedef struct scanData
 {
+	uint8_t validScan;
 	char mac[20];
 	int SSID;
 	char essid[33];
