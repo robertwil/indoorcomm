@@ -38,8 +38,8 @@ typedef struct _bus_handler
     uint32_t mSpeed;
     uint16_t mDelay;
     struct spi_ioc_transfer mTransfer;
-    uint8_t mTx[3];
-    uint8_t mRx[2];
+    uint8_t mTx[2];
+    uint8_t mRx[1];
     uint8_t mDevice;
 
 } bus_handler_t;
@@ -67,7 +67,10 @@ bool bus_shutdown ();
  *
  *
  */
-void bus_send_action(uint16_t data,uint8_t tx0);
+void writeReg(uint8_t reg,uint8_t val);
+uint8_t readReg(uint8_t reg);
+void setConf();
+void getMagData(int16_t* data);
 
 
 /*----------------------------------------------------------------------------*/

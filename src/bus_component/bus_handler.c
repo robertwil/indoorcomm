@@ -69,16 +69,16 @@ bool bus_init(bus_handler_t *object)
 
     int ret=0;
   //  int i;
-    mSelf->mModeWrite = 1;
-    mSelf->mModeWrite = SPI_MODE_1;
-    mSelf->mModeRead = 0;
-    mSelf->mModeRead = SPI_MODE_0;
+    mSelf->mModeWrite = 3;
+    mSelf->mModeWrite = SPI_MODE_3;
+    mSelf->mModeRead = 3;
+    mSelf->mModeRead = SPI_MODE_3;
     mSelf->mBits = 8;
     mSelf->mSpeed = 500000;
     mSelf->mDelay = 0;
     mSelf->mTransfer.tx_buf = (unsigned long)&(mSelf->mTx);
     mSelf->mTransfer.rx_buf = (unsigned long)&(mSelf->mRx);
-    mSelf->mTransfer.len = 3;
+    mSelf->mTransfer.len = 2;
     mSelf->mTransfer.delay_usecs = mSelf->mDelay;
     mSelf->mTransfer.speed_hz = mSelf->mSpeed;
     mSelf->mTransfer.bits_per_word = mSelf->mBits;
@@ -138,6 +138,56 @@ bool bus_shutdown ()
 
 
 	return true;
+}
+
+void setConf(){
+	writeReg(0x22,0b00000000);
+	writeReg(0x23,0b00000000);
+	writeReg(0x24,0b00000000);
+	writeReg(0x25,0b00000000);
+	writeReg(0x26,0b00000000);
+
+}
+
+void getMagData(int16_t* data){
+	int8_t buf[6];
+	uint8_t i;
+	for(i = 0x28;i<= 0x2D;i++){
+		buf[i - 0x28] = readReg(i);
+	}
+	data[0] = buf[0] | (buf[1] << 8);
+	data[1] = buf[2] | (buf[3] << 8);
+	data[2] = buf[4] | (buf[5] << 8);
+}
+
+void writeReg(uint8_t reg, uint8_t val){
+	mSelf->mTx[0] = reg;
+	mSelf->mTx[1] = val;
+	mSelf->mTransfer.len = 2;
+	//CS LOW
+	if (mSelf->mBus >= 0)
+		{
+			ioctl(mSelf->mBus, SPI_IOC_MESSAGE(1), &(mSelf->mTransfer));
+
+		}
+	//CS HIGH
+}
+
+uint8_t readReg(uint8_t reg){
+	uint8_t ret = 0;
+	mSelf->mTx[0] = 0x80 | reg;
+	mSelf->mTx[1] = 0x00;
+	mSelf->mTransfer.len = 2;
+	//CS LOW
+	if (mSelf->mBus >= 0)
+		{
+			ioctl(mSelf->mBus, SPI_IOC_MESSAGE(1), &(mSelf->mTransfer));
+
+		}
+	//CS HIGH TODO
+ ret = mSelf->mRx[1];
+ return ret;
+
 }
 /*
 void bus_send_action(uint16_t data,uint8_t tx0)
